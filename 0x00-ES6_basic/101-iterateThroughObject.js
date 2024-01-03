@@ -3,5 +3,5 @@ export default function iterateThroughObject(reportWithIterator) {
   for (const item of reportWithIterator) {
     result += `${item} | `;
   }
-  return result.slice(0, -2);
+  return result.slice(0, -3);
 }

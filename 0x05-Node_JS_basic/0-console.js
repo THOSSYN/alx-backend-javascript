@@ -1,4 +1,4 @@
-const displayMessage = function(input) {
+function displayMessage(input) {
   process.stdout.write(input + '\n');
 }
 

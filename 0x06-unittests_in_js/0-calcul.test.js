@@ -55,19 +55,19 @@ describe('calculateNumber', function() {
   describe('calculateNumber', function() {
     it('returns Infinity when one of the arg is Inf', function() {
       const result = calculateNumber(5, Infinity);
-      assert.equal(result, Infinity);
+      assert.strictEqual(result, Infinity);
     });
 
     it('returns -Infinity when one of the arg is -Inf', function() {
       const result = calculateNumber(5, -Infinity);
-      assert.equal(result, -Infinity);
+      assert.strictEqual(result, -Infinity);
     });
   });
   
   describe('calculateNumber', function() {
     it('handles large numbers correctly', function() {
       const result = calculateNumber(1e20, 1e20);
-      assert.equal(result, 2e20);
+      assert.strictEqual(result, 2e20);
     });
   });
 });

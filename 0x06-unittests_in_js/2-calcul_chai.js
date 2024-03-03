@@ -1,4 +1,4 @@
-function calculateNumber(type = 'SUM', a, b) {
+function calculateNumber(a, b, type='SUM') {
   if (type === 'SUM') {
     return Math.round(a) + Math.round(b);
   } else if (type === 'SUBTRACT') {

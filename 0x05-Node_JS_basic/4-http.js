@@ -3,11 +3,11 @@ const http = require('http');
 
 // Creating an HTTP server
 const app = http.createServer((req, res) => {
-    // Setting the response headers
-    res.writeHead(200, {'Content-Type': 'text/plain'});
+  // Setting the response headers
+  res.writeHead(200, { 'Content-Type': 'text/plain' });
 
-    // Sending the response body
-    res.end('Hello Holberton School!');
+  // Sending the response body
+  res.end('Hello Holberton School!');
 });
 
 // Making the server listen on port 1245

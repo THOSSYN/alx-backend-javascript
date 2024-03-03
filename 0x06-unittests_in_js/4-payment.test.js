@@ -8,13 +8,13 @@ const calculateNumber = Utils.calculateNumber;
 describe('sendPaymentRequestToApi', function() {
   it('should call Utils.calculateNumber with the correct arguments', function() {
     const calculateNumberStub = sinon.stub(Utils, 'calculateNumber');
-    calculateNumberStub.withArgs('SUM', 100, 20).returns(10);
+    calculateNumberStub.withArgs(100, 20, 'SUM').returns(10);
 
     const consoleLogSpy = sinon.spy(console, 'log');
 
     sendPaymentRequestToApi(100, 20);
 
-    expect(calculateNumberStub.calledWithExactly('SUM', 100, 20)).to.be.true;
+    expect(calculateNumberStub.calledWithExactly(100, 20, 'SUM')).to.be.true;
     expect(consoleLogSpy.calledWithExactly('The total is: 10')).to.be.true;
 
     calculateNumberStub.restore();

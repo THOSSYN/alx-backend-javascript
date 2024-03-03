@@ -34,7 +34,7 @@ function countStudents(pathName) {
 
     console.log(`Number of students in SWE: ${fieldCount.SWE || 0}. List: ${nameList.SWE ? nameList.SWE.join(', ') : 'None'}`);
   } catch (err) {
-    console.error('Error: Cannot load the database');
+    throw new Error('Cannot load the database');
   }
 }
 

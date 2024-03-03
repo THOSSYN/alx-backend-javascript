@@ -1,14 +1,17 @@
-const request = require('request');
+const request = require('supertest');
 const { expect } = require('chai');
-const app = require('./api');
+const server = require('./api');
 
 describe('API', function() {
-  it('Should display "API available on localhost port 7865"', function(done) {
-    request('http://localhost:7865/', function(err, res, body) {
-      if (err) return done(err);
-      expect(res.statusCode).to.equal(200);
-      expect(body).to.equal('Welcome to the payment system');
-      done();
-    });
+  // Test for GET /
+  it('Test for GET / returns "Welcome to the payment system"', function(done) {
+    request(server)
+      .get('/')
+      .expect(200)
+      .end(function(err, res) {
+        if (err) return done(err);
+        expect(res.text).to.equal('Welcome to the payment system');
+        done();
+      });
   });
 });

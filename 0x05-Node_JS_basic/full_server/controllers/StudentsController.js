@@ -1,9 +1,10 @@
-const readDatabase = require('../full_server/utils');
+// const readDatabase = require('../full_server/utils');
+const readDatabase = require('../utils');
 
 class StudentsController {
-  static getAllStudents(request, response) {
+  static async getAllStudents(request, response) {
     try {
-      const studentData = readDatabase(); 
+      const studentData = await readDatabase('../database.csv'); 
       const fieldList = Object.keys(studentData).sort((a, b) => a.localeCompare(b, 'en', { sensitivity: 'base' }));
       
       let output = 'This is the list of our students\n';
@@ -19,15 +20,16 @@ class StudentsController {
     }
   }
 
-  static getAllStudentsByMajor(request, response) {
+  static async getAllStudentsByMajor(request, response) {
     try {
       const { major } = request.query;
+      console.log(`This is major: ${major}`);
       if (!major || (major !== 'SWE' && major !== 'CS')) {
         response.status(500).send('Major parameter must be CS or SWE');
         return;
       }
       
-      const studentData = readDatabase();
+      const studentData = await readDatabase();
       
       if (!studentData[major]) {
         response.status(200).send(`No students found for major ${major}`);

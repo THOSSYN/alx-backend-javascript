@@ -1,8 +1,31 @@
 const fs = require('fs').promises;
 const { promisify } = require('util');
-const readFileAsync = util.promisify(fs.readFile);
 
-async function readDatabase(filePath) {
+const readDatabase = function(fileName) {
+  return new Promise((resolve, reject) => {
+    fs.readFile(fileName, 'utf8')
+      .then(data => {
+        const lines = data.split('\n');
+        const objOfNameArray = {};
+        for (let i = 1; i < lines.length - 1; i += 1) {
+          const firstName = lines[i].split(',')[0];
+          const field = lines[i].split(',')[3];
+          if (!objOfNameArray[field]) {
+            objOfNameArray[field] = [];
+          }
+          objOfNameArray[field].push(firstName);
+        }
+        resolve(objOfNameArray);
+      })
+      .catch(err => {
+        reject(new Error(err));
+      });
+  });
+}
+
+module.exports = readDatabase;
+
+/* async function readDatabase(filePath) {
   try {
     const data = await fs.readFileAsync(filePath, 'utf8');
     const lines = data.split('\n');
@@ -19,6 +42,4 @@ async function readDatabase(filePath) {
   } catch (err) {
     throw error;
   }
-}
-
-module.exports = readDatabase;
+} */

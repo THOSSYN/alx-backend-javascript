@@ -1,14 +1,13 @@
 const express = require('express');
-const AppController = require('../controllers/AppController');
-const StudentsController = require('../controllers/StudentsController');
 
 const router = express.Router();
+const AppController = require('../controllers/AppController').default;
+const StudentsController = require('../controllers/StudentsController').default;
 
-// Routes linked to AppController
 router.get('/', AppController.getHomepage);
 
-// Routes linked to StudentsController
 router.get('/students', StudentsController.getAllStudents);
+
 router.get('/students/:major', StudentsController.getAllStudentsByMajor);
 
 module.exports = router;

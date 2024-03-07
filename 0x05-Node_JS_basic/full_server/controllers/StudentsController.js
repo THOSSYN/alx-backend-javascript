@@ -1,50 +1,44 @@
-// const readDatabase = require('../full_server/utils');
 const readDatabase = require('../utils');
 
-class StudentsController {
-  static async getAllStudents(request, response) {
-    try {
-      const studentData = await readDatabase('../database.csv');
-      const fieldList = Object.keys(studentData).sort((a, b) => a.localeCompare(b, 'en', { sensitivity: 'base' }));
+export default class StudentsController {
+  static getAllStudents(request, response) {
+    // readDatabase returns a promise, so it must be resolved
+    readDatabase(process.argv[2])
+      .then((fieldToStudents) => {
+        let resInfo = 'This is the list of our students\n';
 
-      let output = 'This is the list of our students\n';
+        for (const [field, names] of Object.entries(fieldToStudents)) {
+          const numOfStudents = names.length;
+          const name = names.join(', ');
 
-      fieldList.forEach((field) => {
-        const students = studentData[field].join(', ');
-        output += `Number of students in ${field}: ${studentData[field].length}. List: ${students}\n`;
+          // concatenating the return string
+          resInfo += `Number of students in ${field}: ${numOfStudents}. List: ${name}\n`;
+        }
+        response.status(200).send(resInfo.slice(0, -1));
+      })
+      .catch(() => {
+        response.status(500).send('Cannot load the database');
       });
-
-      response.status(200).send(output);
-    } catch (err) {
-      response.status(500).send('Cannot load the database');
-    }
   }
 
-  static async getAllStudentsByMajor(request, response) {
-    try {
-      const { major } = request.query;
-      console.log(`This is major: ${major}`);
-      if (!major || (major !== 'SWE' && major !== 'CS')) {
-        response.status(500).send('Major parameter must be CS or SWE');
-        return;
-      }
+  static getAllStudentsByMajor(request, response) {
+    const { major } = request.params;
+    const majorList = ['CS', 'SWE'];
 
-      const studentData = await readDatabase();
-
-      if (!studentData[major]) {
-        response.status(200).send(`No students found for major ${major}`);
-        return;
-      }
-
-      const firstNameList = studentData[major].join(', ');
-      const output = `List: ${firstNameList}`;
-
-      response.status(200).send(output);
-    } catch (err) {
-      console.error(err);
-      response.status(500).send('Cannot load the database');
+    if (!majorList.includes(major)) {
+      response.status(500).send('Major parameter must be CS or SWE');
+      return;
     }
+    // readDatabase returns a promise, so it must be resolved
+    readDatabase(process.argv[2])
+      .then((fieldToStudents) => {
+        const names = fieldToStudents[major];
+        const name = names.join(', ');
+        const resInfo = `List: ${name.trim()}`;
+        response.status(200).send(resInfo);
+      })
+      .catch(() => {
+        response.status(500).send('Cannot load the database');
+      });
   }
 }
-
-module.exports = StudentsController;

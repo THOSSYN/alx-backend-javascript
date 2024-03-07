@@ -24,7 +24,7 @@ function countStudents(path) {
         }
 
         console.log(`Number of students: ${lineLength - 1}`);
-        console.log(`Number of students in CS: ${nameList.CS ? nameList.CS.length : 0} List: ${nameList.CS ? nameList.CS.join(', ') : ''}`);
+        console.log(`Number of students in CS: ${nameList.CS ? nameList.CS.length : 0}. List: ${nameList.CS ? nameList.CS.join(', ') : ''}`);
         console.log(`Number of students in SWE: ${nameList.SWE ? nameList.SWE.length : 0}. List: ${nameList.SWE ? nameList.SWE.join(', ') : ''}`);
 
         resolve({ lineLength, fieldCount, nameList }); // Resolve with the data

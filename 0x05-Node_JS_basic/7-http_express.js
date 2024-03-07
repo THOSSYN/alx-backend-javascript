@@ -1,56 +1,57 @@
 const express = require('express');
 const fs = require('fs');
 
-const app = express();
+const host = 'localhost';
 const port = 1245;
+const app = express();
+const file = process.argv[2] || 'database.csv';
+module.exports = app;
 
 app.get('/', (req, res) => {
-  res.send('Hello Holberton School!');
+  res.status(200).send('Hello Holberton School!');
 });
 
 app.get('/students', (req, res) => {
-  try {
-    if (process.argv.length === 3) {
-      const fileName = process.argv[2];
-      fs.readFile(fileName, 'utf8', (err, data) => {
-        if (err) {
-          res.status(500).send('Error reading file');
-        } else {
-          const lines = data.split('\n');
-          const lineLength = lines.length;
-          const fieldCount = {};
-          const nameList = {};
+  const myPromise = new Promise((resolve, reject) => {
+    fs.readFile(file, 'utf8', (err, data) => {
+      if (err) {
+        reject(err);
+        return;
+      }
 
-          for (let i = 1; i < lineLength; i += 1) {
-            const line = lines[i].split(',');
-            const field = line[3];
-            const firstName = line[0];
+      const studentsInfo = data.split('\n').filter((line) => line.trim() !== '');
+      studentsInfo.shift();
+      const numOfStudents = studentsInfo.length;
+      let resInfo = `This is the list of our students
+Number of students: ${numOfStudents}\n`;
+      const studentsInField = {};
 
-            fieldCount[field] = (fieldCount[field] || 0) + 1;
+      studentsInfo.forEach((row) => {
+        const studentInfo = row.split(',');
+        const field = studentInfo.pop();
+        const name = studentInfo.shift();
 
-            if (!nameList[field]) {
-              nameList[field] = [];
-            }
-            nameList[field].push(firstName);
-          }
-          const csStudents = nameList.CS ? nameList.CS.length : 0;
-          const sweStudents = nameList.SWE ? nameList.SWE.length : 0;
-
-          let response = 'This is the list of our students\n';
-          response += `Number of students: ${lineLength - 2}\n`;
-          response += `Number of students in CS: ${csStudents}. List: ${nameList.CS ? nameList.CS.join(', ') : ''}\n`;
-          response += `Number of students in SWE: ${sweStudents}. List: ${nameList.SWE ? nameList.SWE.join(', ') : ''}\n`;
-
-          res.writeHead(200, { 'Content-Type': 'text/plain' });
-          res.end(response);
-        }
+        if (!studentsInField[field]) studentsInField[field] = [];
+        studentsInField[field].push(name);
       });
-    }
-  } catch (err) {
-    res.status(500).send('Error reading file');
-  }
+
+      for (const [field, listOfNames] of Object.entries(studentsInField)) {
+        const numStudents = listOfNames.length;
+        const names = listOfNames.join(', ');
+        const fieldInfo = `Number of students in ${field}: ${numStudents}. List: ${names}\n`;
+        resInfo += fieldInfo;
+      }
+      resolve(resInfo);
+    });
+  });
+
+  myPromise
+    .then((resInfo) => {
+      res.status(200).send(resInfo.slice(0, -1));
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).send('This is the list of our students\nCannot load the database');
+    });
 });
-
-app.listen(port);
-
-module.exports = app;
+app.listen(port, host);

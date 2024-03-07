@@ -1,45 +1,26 @@
-const fs = require('fs').promises;
-const { promisify } = require('util');
+const fs = require('fs');
 
-const readDatabase = function(fileName) {
+module.exports = function readDatabase(db) {
   return new Promise((resolve, reject) => {
-    fs.readFile(fileName, 'utf8')
-      .then(data => {
-        const lines = data.split('\n');
-        const objOfNameArray = {};
-        for (let i = 1; i < lines.length - 1; i += 1) {
-          const firstName = lines[i].split(',')[0];
-          const field = lines[i].split(',')[3];
-          if (!objOfNameArray[field]) {
-            objOfNameArray[field] = [];
-          }
-          objOfNameArray[field].push(firstName);
-        }
-        resolve(objOfNameArray);
-      })
-      .catch(err => {
-        reject(new Error(err));
-      });
-  });
-}
-
-module.exports = readDatabase;
-
-/* async function readDatabase(filePath) {
-  try {
-    const data = await fs.readFileAsync(filePath, 'utf8');
-    const lines = data.split('\n');
-    const studentData = {};
-
-    lines.forEach(line => {
-      const [firstName, _, __, field] = lines.split(',');
-      if (!studentData[field]) {
-        studentData[field] = [];
+    fs.readFile(db, 'utf8', (err, data) => {
+      if (err) {
+        reject(err);
+        return;
       }
-      studentData[field].push(firstName);
+
+      const studentsInfo = data.split('\n').filter((line) => line.trim() !== '');
+      studentsInfo.shift();
+      const fieldToStudents = {};
+      studentsInfo.forEach((row) => {
+        const studentInfo = row.split(',');
+        const field = studentInfo.pop();
+        const name = studentInfo.shift();
+
+        if (!fieldToStudents[field]) fieldToStudents[field] = [];
+        fieldToStudents[field].push(name);
+      });
+
+      resolve(fieldToStudents);
     });
-    return studentData;
-  } catch (err) {
-    throw error;
-  }
-} */
+  });
+};
